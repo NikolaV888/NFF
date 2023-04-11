@@ -1,0 +1,18 @@
+{
+    "name": "PlayerControls",
+    "rootNamespace": "",
+    "references": [
+        "UnityEngine",
+        "UnityEngine.InputSystem",
+        "UnityEngine.InputSystem.Users"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
