@@ -16,6 +16,8 @@ public class PlayerPunch : MonoBehaviour
     public float punchRate = 1f;
     float nextPunchTime = 0f;
 
+    //reference to Movement
+    private Movement playerMovement;
 
     private Animator animator;
     private PlayerAttributes playerAttributes;
@@ -24,11 +26,12 @@ public class PlayerPunch : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         playerAttributes = GetComponent<PlayerAttributes>();
+        playerMovement = GetComponent<Movement>();
     }
 
     void Update()
     {
-        if(Time.time >= nextPunchTime)
+        if (Time.time >= nextPunchTime)
         {
             if (Input.GetKeyDown(KeyCode.A))
             {
@@ -50,6 +53,9 @@ public class PlayerPunch : MonoBehaviour
         animator.SetTrigger("LeftPunch");
         playerAttributes.DecreaseStamina(staminaDecreaseRate);
 
+        //Update punch collider based on the player's direction
+        UpdatePunchCollider(leftPunchOrigin);
+
         //Detect enemimes in range of attack
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(leftPunchOrigin.position, punchRange, enemiesLayers);
 
@@ -62,7 +68,6 @@ public class PlayerPunch : MonoBehaviour
 
         //stop movement when punching
         StartCoroutine(DisableMovementDuringPunch(0.3f)); // Adjust the delay based on your punch animation duration
-
     }
 
     void RightPunch()
@@ -71,11 +76,14 @@ public class PlayerPunch : MonoBehaviour
         animator.SetTrigger("RightPunch");
         playerAttributes.DecreaseStamina(staminaDecreaseRate);
 
+        //Update punch collider based on the player's direction
+        UpdatePunchCollider(rightPunchOrigin);
+
         //Detect enemimes in range of attack
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(rightPunchOrigin.position, punchRange, enemiesLayers);
 
         //damage enemy
-        foreach(Collider2D enemy in hitEnemies)
+        foreach (Collider2D enemy in hitEnemies)
         {
             enemy.GetComponent<NPCAttributes>().TakeDamage(punchDamage);
             Debug.Log("NPC hit" + enemy.name);
@@ -83,7 +91,6 @@ public class PlayerPunch : MonoBehaviour
 
         //stop movement when punching
         StartCoroutine(DisableMovementDuringPunch(0.3f)); // Adjust the delay based on your punch animation duration
-
     }
 
     //Proc for the movement stop
@@ -93,6 +100,32 @@ public class PlayerPunch : MonoBehaviour
         movement.canMove = false;
         yield return new WaitForSeconds(delay);
         movement.canMove = true;
+    }
+
+    void UpdatePunchCollider(Transform punchOrigin)
+    {
+        BoxCollider2D punchCollider = punchOrigin.GetComponent<BoxCollider2D>();
+
+        if (playerMovement.direction == Vector2.up)
+        {
+            punchCollider.offset = new Vector2(0, 0.5f);
+            punchCollider.size = new Vector2(1f, 1f);
+        }
+        else if (playerMovement.direction == Vector2.down)
+        {
+            punchCollider.offset = new Vector2(0, -0.5f);
+            punchCollider.size = new Vector2(1f, 1f);
+        }
+        else if (playerMovement.direction == Vector2.left)
+        {
+            punchCollider.offset = new Vector2(-0.5f, 0);
+            punchCollider.size = new Vector2(1f, 1f);
+        }
+        else if (playerMovement.direction == Vector2.right)
+        {
+            punchCollider.offset = new Vector2(0.5f, 0);
+            punchCollider.size = new Vector2(1f, 1f);
+        }
     }
 
     void OnDrawGizmosSelected()
@@ -107,83 +140,4 @@ public class PlayerPunch : MonoBehaviour
             Gizmos.DrawWireSphere(rightPunchOrigin.position, punchRange);
         }
     }
-
-    /*
-    using System.Collections;
-    using System.Collections.Generic;
-    using UnityEngine;
-
-    public class PlayerPunch : MonoBehaviour
-    {
-        public float punchDamage = 10f;
-        public float punchRange = 1f;
-        public LayerMask npcLayer;
-        public Transform leftPunchOrigin;
-        public Transform rightPunchOrigin;
-        public float staminaDecreaseRate = 1f;
-
-
-        private Animator animator;
-        private PlayerAttributes playerAttributes;
-
-        void Start()
-        {
-            animator = GetComponent<Animator>();
-            playerAttributes = GetComponent<PlayerAttributes>();
-        }
-
-        void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                Punch("LeftPunch");
-            }
-
-            if (Input.GetKeyDown(KeyCode.S))
-            {
-                Punch("RightPunch");
-            }
-        }
-
-        void Punch(string punchType)
-        {
-            animator.SetTrigger(punchType);
-            playerAttributes.DecreaseStamina(staminaDecreaseRate);
-
-            StartCoroutine(DisableMovementDuringPunch(0.5f)); // Adjust the delay based on your punch animation duration
-
-            Vector2 punchOrigin = punchType == "LeftPunch" ? leftPunchOrigin.position : rightPunchOrigin.position;
-            Collider2D[] hitNPCs = Physics2D.OverlapCircleAll(punchOrigin, punchRange, npcLayer);
-
-            foreach (Collider2D npc in hitNPCs)
-            {
-                npc.GetComponent<NPCAttributes>().TakeDamage(punchDamage);
-            }
-        }
-
-        IEnumerator DisableMovementDuringPunch(float delay)
-        {
-            Movement movement = GetComponent<Movement>();
-            movement.canMove = false;
-            yield return new WaitForSeconds(delay);
-            movement.canMove = true;
-        }
-
-        void OnDrawGizmosSelected()
-        {
-            if (leftPunchOrigin != null)
-            {
-                Gizmos.DrawWireSphere(leftPunchOrigin.position, punchRange);
-            }
-
-            if (rightPunchOrigin != null)
-            {
-                Gizmos.DrawWireSphere(rightPunchOrigin.position, punchRange);
-            }
-        }
-    }
-    */
-
 }
-
-

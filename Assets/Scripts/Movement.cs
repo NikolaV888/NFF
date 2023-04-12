@@ -4,17 +4,22 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
+    //vars
     public float walkSpeed = 3f; // The speed at which the player walks
     public float runSpeed = 6f; // The speed at which the player runs
 
+    //other
     public Rigidbody2D rb; // The Rigidbody2D component attached to the player
     public Vector2 movementDirection; // The current movement direction of the player
 
     public Animator animator;
     public LayerMask treesLayer;
 
+    //vars
     public bool canMove = true;
     public bool isRunning = false;
+    public Vector2 direction { get; private set; }
+
     //public bool canRotate = true;
     //   public bool canRotate = true;
 
