@@ -12,6 +12,11 @@ public class NPCControl : MonoBehaviour
     private float maxRange;
     [SerializeField]
     private float minRange;
+    [SerializeField]
+    private float avoidDistance = 1f;
+    [SerializeField]
+    private LayerMask obstacleLayers;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -26,20 +31,36 @@ public class NPCControl : MonoBehaviour
         {
             FollowPlayer();
         }
-        else if (Vector3.Distance(target.position, transform.position) >= maxRange)
-        {
-            npcAnim.SetBool("withinRange", false);
-        }
         else
         {
             npcAnim.SetBool("withinRange", false);
         }
     }
+
     public void FollowPlayer()
     {
         npcAnim.SetBool("withinRange", true);
-        npcAnim.SetFloat("Horizontal", (target.position.x - transform.position.x));
-        npcAnim.SetFloat("Vertical", (target.position.y - transform.position.y));
-        transform.position = Vector3.MoveTowards(transform.position, target.transform.position, speed * Time.deltaTime);
+
+        Vector3 directionToTarget = (target.position - transform.position).normalized;
+        Vector3 avoidObstacleDirection = AvoidObstacle(directionToTarget);
+
+        npcAnim.SetFloat("Horizontal", avoidObstacleDirection.x);
+        npcAnim.SetFloat("Vertical", avoidObstacleDirection.y);
+
+        transform.position += avoidObstacleDirection * speed * Time.deltaTime;
+    }
+
+    private Vector3 AvoidObstacle(Vector3 direction)
+    {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, avoidDistance, obstacleLayers);
+
+        if (hit.collider != null)
+        {
+            Vector3 avoidDirection = (hit.point - (Vector2)transform.position).normalized;
+            avoidDirection = Quaternion.Euler(0, 0, 90) * avoidDirection; // Turn 90 degrees to avoid the obstacle
+            return avoidDirection;
+        }
+
+        return direction;
     }
 }

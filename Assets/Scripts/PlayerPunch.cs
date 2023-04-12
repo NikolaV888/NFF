@@ -6,7 +6,6 @@ public class PlayerPunch : MonoBehaviour
 {
     //vars 
     public float punchDamage = 10f;
-    public float punchRange = 1f;
     public float staminaDecreaseRate = 1f;
     //other 
     public LayerMask enemiesLayers;
@@ -31,6 +30,10 @@ public class PlayerPunch : MonoBehaviour
 
     void Update()
     {
+        // Update punch origin based on the player's direction
+        UpdatePunchOrigin(leftPunchOrigin);
+        UpdatePunchOrigin(rightPunchOrigin);
+
         if (Time.time >= nextPunchTime)
         {
             if (Input.GetKeyDown(KeyCode.A))
@@ -47,19 +50,20 @@ public class PlayerPunch : MonoBehaviour
         }
     }
 
+
     void LeftPunch()
     {
         //animation
         animator.SetTrigger("LeftPunch");
         playerAttributes.DecreaseStamina(staminaDecreaseRate);
 
-        //Update punch collider based on the player's direction
-        UpdatePunchCollider(leftPunchOrigin);
+        // Update punch origin based on the player's direction
+        UpdatePunchOrigin(leftPunchOrigin);
 
-        //Detect enemimes in range of attack
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(leftPunchOrigin.position, punchRange, enemiesLayers);
+        // Detect enemies in the box for the left punch
+        Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(leftPunchOrigin.position, leftPunchOrigin.localScale, 0, enemiesLayers);
 
-        //damage enemy
+        // Damage enemy
         foreach (Collider2D enemy in hitEnemies)
         {
             enemy.GetComponent<NPCAttributes>().TakeDamage(punchDamage);
@@ -76,13 +80,13 @@ public class PlayerPunch : MonoBehaviour
         animator.SetTrigger("RightPunch");
         playerAttributes.DecreaseStamina(staminaDecreaseRate);
 
-        //Update punch collider based on the player's direction
-        UpdatePunchCollider(rightPunchOrigin);
+        // Update punch origin based on the player's direction
+        UpdatePunchOrigin(rightPunchOrigin);
 
-        //Detect enemimes in range of attack
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(rightPunchOrigin.position, punchRange, enemiesLayers);
+        // Detect enemies in the box for the right punch
+        Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(rightPunchOrigin.position, rightPunchOrigin.localScale, 0, enemiesLayers);
 
-        //damage enemy
+        // Damage enemy
         foreach (Collider2D enemy in hitEnemies)
         {
             enemy.GetComponent<NPCAttributes>().TakeDamage(punchDamage);
@@ -102,42 +106,42 @@ public class PlayerPunch : MonoBehaviour
         movement.canMove = true;
     }
 
-    void UpdatePunchCollider(Transform punchOrigin)
+    void UpdatePunchOrigin(Transform punchOrigin)
     {
-        BoxCollider2D punchCollider = punchOrigin.GetComponent<BoxCollider2D>();
+        punchOrigin.localRotation = Quaternion.Euler(0, 0, 0);
+        punchOrigin.localScale = new Vector3(0.44f, 0.85f, 0);
 
         if (playerMovement.direction == Vector2.up)
         {
-            punchCollider.offset = new Vector2(0, 0.5f);
-            punchCollider.size = new Vector2(1f, 1f);
+            punchOrigin.localPosition = new Vector3(0, 0.13f, 0);
         }
         else if (playerMovement.direction == Vector2.down)
         {
-            punchCollider.offset = new Vector2(0, -0.5f);
-            punchCollider.size = new Vector2(1f, 1f);
+            punchOrigin.localPosition = new Vector3(0, -0.18f, 0);
         }
         else if (playerMovement.direction == Vector2.left)
         {
-            punchCollider.offset = new Vector2(-0.5f, 0);
-            punchCollider.size = new Vector2(1f, 1f);
+            punchOrigin.localPosition = new Vector3(-0.15f, -0.5f, 0);
         }
         else if (playerMovement.direction == Vector2.right)
         {
-            punchCollider.offset = new Vector2(0.5f, 0);
-            punchCollider.size = new Vector2(1f, 1f);
+            punchOrigin.localPosition = new Vector3(0.12f, -0.5f, 0);
         }
     }
+
 
     void OnDrawGizmosSelected()
     {
         if (leftPunchOrigin != null)
         {
-            Gizmos.DrawWireSphere(leftPunchOrigin.position, punchRange);
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(leftPunchOrigin.position, leftPunchOrigin.localScale);
         }
 
         if (rightPunchOrigin != null)
         {
-            Gizmos.DrawWireSphere(rightPunchOrigin.position, punchRange);
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(rightPunchOrigin.position, rightPunchOrigin.localScale);
         }
     }
 }
