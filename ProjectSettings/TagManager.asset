@@ -42,8 +42,14 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Map
+  - name: Grass
     uniqueID: 1719179021
+    locked: 0
+  - name: Water
+    uniqueID: 2591091921
+    locked: 0
+  - name: Stairs
+    uniqueID: 1193600735
     locked: 0
   - name: Trees
     uniqueID: 2579062201
