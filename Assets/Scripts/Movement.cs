@@ -44,6 +44,9 @@ public class Movement : MonoBehaviour
             movementDirection = new Vector2(horizontalInput, verticalInput).normalized;
             movementDirection.Normalize();
 
+            // Update the direction variable
+            direction = movementDirection;
+
             if (movementDirection.magnitude > 0)
             {
                 animator.SetFloat("Horizontal", movementDirection.x);

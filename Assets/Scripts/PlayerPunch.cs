@@ -30,10 +30,6 @@ public class PlayerPunch : MonoBehaviour
 
     void Update()
     {
-        // Update punch origin based on the player's direction
-        UpdatePunchOrigin(leftPunchOrigin);
-        UpdatePunchOrigin(rightPunchOrigin);
-
         if (Time.time >= nextPunchTime)
         {
             if (Input.GetKeyDown(KeyCode.A))
@@ -48,7 +44,12 @@ public class PlayerPunch : MonoBehaviour
                 nextPunchTime = Time.time + 1f / punchRate;
             }
         }
+
+        // Update punch origin based on the player's direction
+        UpdatePunchOrigin(leftPunchOrigin);
+        UpdatePunchOrigin(rightPunchOrigin);
     }
+
 
 
     void LeftPunch()
@@ -121,11 +122,11 @@ public class PlayerPunch : MonoBehaviour
         }
         else if (playerMovement.direction == Vector2.left)
         {
-            punchOrigin.localPosition = new Vector3(-0.15f, -0.5f, 0);
+            punchOrigin.localPosition = new Vector3(-0.15f, 0, 0);
         }
         else if (playerMovement.direction == Vector2.right)
         {
-            punchOrigin.localPosition = new Vector3(0.12f, -0.5f, 0);
+            punchOrigin.localPosition = new Vector3(0.12f, 0, 0);
         }
     }
 
