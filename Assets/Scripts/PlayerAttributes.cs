@@ -10,6 +10,7 @@ public class PlayerAttributes : MonoBehaviour
     public float staminaDecreaseRate = 1f;
     public float maxChakra = 100f;
     public float currentChakra;
+
     public void DecreaseStamina(float amount)
     {
         currentStamina -= amount;
@@ -21,8 +22,6 @@ public class PlayerAttributes : MonoBehaviour
         return currentStamina;
     }
 
-
-    // Additional attributes and variables
     public string villageAffiliation;
     public string ninjaRank;
     public string ninjaClass;
@@ -31,13 +30,14 @@ public class PlayerAttributes : MonoBehaviour
     public float killDeathRatio;
     public int yen;
 
+    public LayerMask waterLayerMask;
+
     void Start()
     {
         currentHealth = maxHealth;
         currentStamina = maxStamina;
         currentChakra = maxChakra;
 
-        // Initialize other attributes and variables
         villageAffiliation = "Leaf";
         ninjaRank = "Genin";
         ninjaClass = "C";
@@ -55,7 +55,6 @@ public class PlayerAttributes : MonoBehaviour
             currentStamina -= staminaDecreaseRate * Time.deltaTime;
             currentStamina = Mathf.Clamp(currentStamina, 0, maxStamina);
         }
-
         else
         {
             float staminaRegenRate = 0.5f; // Adjust this value to control how fast stamina regenerates
@@ -64,6 +63,24 @@ public class PlayerAttributes : MonoBehaviour
             // Clamp stamina to the range [0, maxStamina]
             currentStamina = Mathf.Clamp(currentStamina, 0, maxStamina);
         }
+
+        // Chakra regeneration when holding the Z key and standing on water
+        if (IsPlayerOnWater() && Input.GetKey(KeyCode.Z))
+        {
+            float chakraRegenRate = 2f; // Adjust this value to control how fast chakra regenerates
+            currentChakra += chakraRegenRate * Time.deltaTime;
+            currentChakra = Mathf.Clamp(currentChakra, 0, maxChakra);
+        }
+    }
+
+    private bool IsPlayerOnWater()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.zero, Mathf.Infinity, waterLayerMask);
+        if (hit.collider != null)
+        {
+            return true;
+        }
+        return false;
     }
 
     void OnGUI()
