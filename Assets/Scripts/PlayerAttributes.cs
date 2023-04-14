@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
+
 
 public class PlayerAttributes : MonoBehaviour
 {
@@ -12,6 +14,12 @@ public class PlayerAttributes : MonoBehaviour
     public float staminaDecreaseRate = 1f;
     public float maxChakra = 100f;
     public float currentChakra;
+
+    //new
+  //  public SortingLayer waterSortingLayer;
+  //  public LayerMask groundLayers;
+    public TilemapManager tilemapManager;
+
 
     public void DecreaseStamina(float amount)
     {
@@ -68,7 +76,47 @@ public class PlayerAttributes : MonoBehaviour
             currentChakra += chakraRegenRate * Time.deltaTime;
             currentChakra = Mathf.Clamp(currentChakra, 0, maxChakra);
         }
+
+        bool IsPositionOnWater = tilemapManager.IsPositionOnWater(transform.position);
+        if (!tilemapManager.IsPositionOnGrass(transform.position) && tilemapManager.IsPositionOnWater(transform.position) && movement.movementDirection.magnitude > 0)
+        {
+            float chakraDecreaseRate = 2f;
+            currentChakra -= chakraDecreaseRate * Time.deltaTime;
+            currentChakra = Mathf.Clamp(currentChakra, 0, maxChakra);
+
+            // Add debug message for chakra decrease
+            Debug.Log("Decreasing chakra: " + currentChakra);
+        }
     }
+
+    /*
+    private bool IsOnWater()
+    {
+        Vector2 playerPosition = new Vector2(transform.position.x, transform.position.y);
+        Vector2 boxSize = new Vector2(detectionBoxSize, detectionBoxSize);
+        Collider2D[] hitColliders = Physics2D.OverlapBoxAll(playerPosition, boxSize, 0, tilemapLayers);
+
+        foreach (Collider2D hitCollider in hitColliders)
+        {
+            Tilemap tilemap = hitCollider.GetComponent<Tilemap>();
+            if (tilemap != null && tilemap.gameObject.tag == "Water")
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    */
+    private bool IsPlayerOnWater()
+    {
+        if (tilemapManager == null)
+        {
+            return false;
+        }
+        return tilemapManager.IsPositionOnWater(transform.position);
+    }
+
+
 
     void OnGUI()
     {
