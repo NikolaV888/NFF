@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerAttributes : MonoBehaviour
@@ -30,8 +32,6 @@ public class PlayerAttributes : MonoBehaviour
     public float killDeathRatio;
     public int yen;
 
-    public LayerMask waterLayerMask;
-
     void Start()
     {
         currentHealth = maxHealth;
@@ -57,30 +57,17 @@ public class PlayerAttributes : MonoBehaviour
         }
         else
         {
-            float staminaRegenRate = 0.5f; // Adjust this value to control how fast stamina regenerates
+            float staminaRegenRate = 0.5f;
             currentStamina += staminaRegenRate * Time.deltaTime;
-
-            // Clamp stamina to the range [0, maxStamina]
             currentStamina = Mathf.Clamp(currentStamina, 0, maxStamina);
         }
 
-        // Chakra regeneration when holding the Z key and standing on water
-        if (IsPlayerOnWater() && Input.GetKey(KeyCode.Z))
+        if (Input.GetKey(KeyCode.Z))
         {
-            float chakraRegenRate = 2f; // Adjust this value to control how fast chakra regenerates
+            float chakraRegenRate = 2f;
             currentChakra += chakraRegenRate * Time.deltaTime;
             currentChakra = Mathf.Clamp(currentChakra, 0, maxChakra);
         }
-    }
-
-    private bool IsPlayerOnWater()
-    {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.zero, Mathf.Infinity, waterLayerMask);
-        if (hit.collider != null)
-        {
-            return true;
-        }
-        return false;
     }
 
     void OnGUI()

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
+    public float speed { get; private set; }
     //vars
     public float walkSpeed = 3f; // The speed at which the player walks
     public float runSpeed = 6f; // The speed at which the player runs
