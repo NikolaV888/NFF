@@ -4,18 +4,21 @@ using UnityEngine;
 
 public class PlayerPunch : MonoBehaviour
 {
-    //vars 
+    // Variables
     public float punchDamage = 10f;
     public float staminaDecreaseRate = 1f;
-    //other 
+    // Other
     public LayerMask enemiesLayers;
     public Transform leftPunchOrigin;
     public Transform rightPunchOrigin;
-    //punchrates
+    // Punch rates
     public float punchRate = 1f;
     float nextPunchTime = 0f;
+    // Charge punch
+    private float chargeTime = -1f;
+    public float minChargeTime = 2f;
 
-    //reference to Movement
+    // Reference to Movement
     private Movement playerMovement;
 
     private Animator animator;
@@ -34,14 +37,30 @@ public class PlayerPunch : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.A))
             {
-                LeftPunch();
-                nextPunchTime = Time.time + 1f / punchRate;
+                chargeTime = Time.time;
+            }
+
+            if (Input.GetKeyUp(KeyCode.A))
+            {
+                if (Time.time >= nextPunchTime)
+                {
+                    LeftPunch();
+                    nextPunchTime = Time.time + 1f / punchRate;
+                }
             }
 
             if (Input.GetKeyDown(KeyCode.S))
             {
-                RightPunch();
-                nextPunchTime = Time.time + 1f / punchRate;
+                chargeTime = Time.time;
+            }
+
+            if (Input.GetKeyUp(KeyCode.S))
+            {
+                if (Time.time >= nextPunchTime)
+                {
+                    RightPunch();
+                    nextPunchTime = Time.time + 1f / punchRate;
+                }
             }
         }
 
@@ -50,11 +69,21 @@ public class PlayerPunch : MonoBehaviour
         UpdatePunchOrigin(rightPunchOrigin);
     }
 
-
-
     void LeftPunch()
     {
-        //animation
+        float elapsedTime = Time.time - chargeTime;
+        bool isChargedPunch = elapsedTime >= minChargeTime;
+
+        if (isChargedPunch)
+        {
+            punchDamage = Random.Range(10, 13);
+        }
+        else
+        {
+            punchDamage = Random.Range(6, 10);
+        }
+
+        // Animation
         animator.SetTrigger("LeftPunch");
         playerAttributes.DecreaseStamina(staminaDecreaseRate);
 
@@ -71,13 +100,25 @@ public class PlayerPunch : MonoBehaviour
             Debug.Log("NPC hit" + enemy.name);
         }
 
-        //stop movement when punching
+        // Stop movement when punching
         StartCoroutine(DisableMovementDuringPunch(0.3f)); // Adjust the delay based on your punch animation duration
     }
 
     void RightPunch()
     {
-        //animation
+        float elapsedTime = Time.time - chargeTime;
+        bool isChargedPunch = elapsedTime >= minChargeTime;
+
+        if (isChargedPunch)
+        {
+            punchDamage = Random.Range(10, 13);
+        }
+        else
+        {
+            punchDamage = Random.Range(6, 10);
+        }
+
+        // Animation
         animator.SetTrigger("RightPunch");
         playerAttributes.DecreaseStamina(staminaDecreaseRate);
 
@@ -94,11 +135,11 @@ public class PlayerPunch : MonoBehaviour
             Debug.Log("NPC hit" + enemy.name);
         }
 
-        //stop movement when punching
+        // Stop movement when punching
         StartCoroutine(DisableMovementDuringPunch(0.3f)); // Adjust the delay based on your punch animation duration
     }
 
-    //Proc for the movement stop
+    // Coroutine for the movement stop
     IEnumerator DisableMovementDuringPunch(float delay)
     {
         Movement movement = GetComponent<Movement>();
@@ -129,7 +170,6 @@ public class PlayerPunch : MonoBehaviour
             punchOrigin.localPosition = new Vector3(0.12f, 0, 0);
         }
     }
-
 
     void OnDrawGizmosSelected()
     {

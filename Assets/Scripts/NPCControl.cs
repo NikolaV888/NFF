@@ -5,6 +5,7 @@ using UnityEngine;
 public class NPCControl : MonoBehaviour
 {
     private Animator npcAnim;
+    private Vector3 lastDirection;//new
     private Transform target;
     [SerializeField]
     private float speed;
@@ -16,12 +17,19 @@ public class NPCControl : MonoBehaviour
     private float avoidDistance = 1f;
     [SerializeField]
     private LayerMask obstacleLayers;
+    [SerializeField]
+    private float runSpeed;
+    [SerializeField]
+    private float walkSpeed;
+
+    private NPCAttributes npcAttributes;
 
     // Start is called before the first frame update
     void Start()
     {
         npcAnim = GetComponent<Animator>();
         target = FindObjectOfType<Movement>().transform;
+        npcAttributes = GetComponent<NPCAttributes>(); // Add this line
     }
 
     // Update is called once per frame
@@ -34,11 +42,27 @@ public class NPCControl : MonoBehaviour
         else
         {
             npcAnim.SetBool("withinRange", false);
+            npcAnim.SetFloat("Horizontal", lastDirection.x);
+            npcAnim.SetFloat("Vertical", lastDirection.y);
+
+            // Set the IsRunning parameter to false when not following the player
+            npcAnim.SetBool("IsRunning", false);
         }
     }
 
     public void FollowPlayer()
     {
+        bool isRunning = npcAttributes.currentStamina > 20;
+
+        if (isRunning)
+        {
+            speed = runSpeed;
+        }
+        else
+        {
+            speed = walkSpeed;
+        }
+
         npcAnim.SetBool("withinRange", true);
 
         Vector3 directionToTarget = (target.position - transform.position).normalized;
@@ -47,8 +71,17 @@ public class NPCControl : MonoBehaviour
         npcAnim.SetFloat("Horizontal", avoidObstacleDirection.x);
         npcAnim.SetFloat("Vertical", avoidObstacleDirection.y);
 
+        // Set the IsRunning parameter in the Animator based on the isRunning variable
+        npcAnim.SetBool("IsRunning", isRunning);
+
+        lastDirection = avoidObstacleDirection; // Add this line
+
+        // Move the NPC using its Transform
         transform.position += avoidObstacleDirection * speed * Time.deltaTime;
     }
+
+
+
 
     private Vector3 AvoidObstacle(Vector3 direction)
     {

@@ -234,9 +234,7 @@ MonoBehaviour:
   staminaDecreaseRate: 1
   maxChakra: 100
   currentChakra: 0
-  groundLayers:
-    serializedVersion: 2
-    m_Bits: 0
+  tilemapManager: {fileID: 0}
   villageAffiliation: 
   ninjaRank: 
   ninjaClass: 
@@ -290,6 +288,7 @@ MonoBehaviour:
   leftPunchOrigin: {fileID: 4270627579404547024}
   rightPunchOrigin: {fileID: 4270627579988184956}
   punchRate: 2
+  minChargeTime: 0.5
 --- !u!1 &4270627579988184955
 GameObject:
   m_ObjectHideFlags: 0

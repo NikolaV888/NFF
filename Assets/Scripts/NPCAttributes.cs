@@ -6,6 +6,12 @@ public class NPCAttributes : MonoBehaviour
 {
     public float maxHealth = 100f;
     public float currentHealth;
+    public float maxStamina = 100f;
+    public float currentStamina;
+    public float minStamina = 0f;
+    public float staminaDecreaseRate = 1f;
+    public float maxChakra = 100f;
+    public float currentChakra;
     public Rigidbody2D rb;
     public Collider2D col;
 
@@ -26,12 +32,16 @@ public class NPCAttributes : MonoBehaviour
     public delegate void OnDeath();
     public event OnDeath onDeath;
 
+    //new for running
+    public float staminaRecoveryRate = 5f;
+
 
     void Start()
     {
         currentHealth = maxHealth;
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
+        currentStamina = maxStamina;
     }
 
     public void TakeDamage(float damage)
@@ -117,6 +127,12 @@ public class NPCAttributes : MonoBehaviour
             {
                 damageMessages.RemoveAt(i);
             }
+        }
+        currentStamina = Mathf.Clamp(currentStamina, minStamina, maxStamina);
+
+        if (currentStamina < maxStamina)
+        {
+            currentStamina += staminaRecoveryRate * Time.deltaTime;
         }
     }
 
