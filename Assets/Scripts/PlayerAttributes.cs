@@ -16,10 +16,10 @@ public class PlayerAttributes : MonoBehaviour
     public float currentChakra;
 
     //new
-  //  public SortingLayer waterSortingLayer;
-  //  public LayerMask groundLayers;
+    //  public SortingLayer waterSortingLayer;
+    //  public LayerMask groundLayers;
     public TilemapManager tilemapManager;
-
+    private Animator animator; // Define the animator variable here//
 
     public void DecreaseStamina(float amount)
     {
@@ -53,8 +53,10 @@ public class PlayerAttributes : MonoBehaviour
         deaths = 0;
         killDeathRatio = 0;
         yen = 0;
-    }
 
+        // Initialize the animator variable
+        animator = GetComponent<Animator>();
+    }
     void Update()
     {
         Movement movement = GetComponent<Movement>();
@@ -73,9 +75,18 @@ public class PlayerAttributes : MonoBehaviour
         if (Input.GetKey(KeyCode.Z))
         {
             float chakraRegenRate = 2f;
+            movement.canMove = false;
             currentChakra += chakraRegenRate * Time.deltaTime;
             currentChakra = Mathf.Clamp(currentChakra, 0, maxChakra);
+            animator.SetBool("IsChargingChakra", true);
         }
+        else
+        {
+            movement.canMove = true;
+            animator.SetBool("IsChargingChakra", false);
+        }
+
+
 
         bool IsPositionOnWater = tilemapManager.IsPositionOnWater(transform.position);
         if (!tilemapManager.IsPositionOnGrass(transform.position) && tilemapManager.IsPositionOnWater(transform.position) && movement.movementDirection.magnitude > 0)
@@ -85,7 +96,7 @@ public class PlayerAttributes : MonoBehaviour
             currentChakra = Mathf.Clamp(currentChakra, 0, maxChakra);
 
             // Add debug message for chakra decrease
-            Debug.Log("Decreasing chakra: " + currentChakra);
+            //Debug.Log("Decreasing chakra: " + currentChakra);
         }
     }
 
