@@ -57,6 +57,7 @@ public class PlayerAttributes : MonoBehaviour
         // Initialize the animator variable
         animator = GetComponent<Animator>();
     }
+
     void Update()
     {
         Movement movement = GetComponent<Movement>();
@@ -79,6 +80,10 @@ public class PlayerAttributes : MonoBehaviour
             currentChakra += chakraRegenRate * Time.deltaTime;
             currentChakra = Mathf.Clamp(currentChakra, 0, maxChakra);
             animator.SetBool("IsChargingChakra", true);
+
+            // Maintain player's direction while charging chakra
+            animator.SetFloat("Horizontal", movement.direction.x);
+            animator.SetFloat("Vertical", movement.direction.y);
         }
         else
         {
