@@ -55,9 +55,9 @@ TagManager:
   - name: Walls
     uniqueID: 3022721055
     locked: 0
-  - name: Player
-    uniqueID: 1035778711
-    locked: 0
   - name: Trees
     uniqueID: 2579062201
+    locked: 0
+  - name: Player
+    uniqueID: 1035778711
     locked: 0

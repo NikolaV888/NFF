@@ -14,7 +14,7 @@ public class TilemapManager : MonoBehaviour
             Vector3Int cellPosition = tilemap.WorldToCell(worldPosition);
             if (tilemap.HasTile(cellPosition))
             {
-             //   Debug.Log("On grass tile");
+                Debug.Log("On grass tile");
                 return true;
             }
         }
@@ -28,7 +28,7 @@ public class TilemapManager : MonoBehaviour
             Vector3Int cellPosition = tilemap.WorldToCell(worldPosition);
             if (tilemap.HasTile(cellPosition))
             {
-              //  Debug.Log("On water tile");
+                Debug.Log("On water tile");
                 return true;
             }
         }

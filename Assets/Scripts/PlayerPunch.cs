@@ -96,10 +96,9 @@ public class PlayerPunch : MonoBehaviour
         // Damage enemy
         foreach (Collider2D enemy in hitEnemies)
         {
-            enemy.GetComponent<NPCAttributes>().DecreaseStamina(punchDamage); // Change this line
-            Debug.Log("NPC hit: " + enemy.name + " with " + punchDamage + " stamina damage");
+            enemy.GetComponent<NPCAttributes>().TakeDamage(punchDamage);
+            Debug.Log("NPC hit" + enemy.name);
         }
-
 
         // Stop movement when punching
         StartCoroutine(DisableMovementDuringPunch(0.3f)); // Adjust the delay based on your punch animation duration
@@ -132,8 +131,8 @@ public class PlayerPunch : MonoBehaviour
         // Damage enemy
         foreach (Collider2D enemy in hitEnemies)
         {
-            enemy.GetComponent<NPCAttributes>().DecreaseStamina(punchDamage); // Change this line
-            Debug.Log("NPC hit: " + enemy.name + " with " + punchDamage + " stamina damage");
+            enemy.GetComponent<NPCAttributes>().TakeDamage(punchDamage);
+            Debug.Log("NPC hit" + enemy.name);
         }
 
         // Stop movement when punching

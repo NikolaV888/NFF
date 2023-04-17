@@ -33,7 +33,7 @@ public class NPCAttributes : MonoBehaviour
     public event OnDeath onDeath;
 
     //new for running
-    public float staminaRecoveryRate = 2f;
+    public float staminaRecoveryRate = 5f;
 
 
     void Start()
@@ -46,10 +46,16 @@ public class NPCAttributes : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        DecreaseStamina(damage);
-
-        // Create a new DamageMessage instance and add it to the list
+        currentHealth -= damage;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // Clamp health to a minimum of 0
         damageMessages.Add(new DamageMessage($"-{damage}", damageMessageDuration));
+
+        //play hurt animation
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
     }
 
     void Die()
@@ -127,26 +133,6 @@ public class NPCAttributes : MonoBehaviour
         if (currentStamina < maxStamina)
         {
             currentStamina += staminaRecoveryRate * Time.deltaTime;
-        }
-
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
-    }
-
-    public void DecreaseStamina(float amount)
-    {
-        currentStamina -= amount;
-        if (currentStamina < 0)
-        {
-            float staminaDeficit = Mathf.Abs(currentStamina);
-            currentStamina = 0;
-            currentHealth -= staminaDeficit;
-            if (currentHealth < 0)
-            {
-                currentHealth = 0;
-            }
         }
     }
 
