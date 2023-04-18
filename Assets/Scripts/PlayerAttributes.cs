@@ -7,6 +7,7 @@ public class PlayerAttributes : MonoBehaviour
 {
     public float maxHealth = 100f;
     public float currentHealth;
+    public float minHealth = 0f;
     public float maxStamina = 100f;
     public float currentStamina;
     public float minStamina = 0f;
