@@ -74,6 +74,7 @@ GameObject:
   - component: {fileID: 8450140308641947050}
   - component: {fileID: 5651977434940123668}
   - component: {fileID: 4270627581018072213}
+  - component: {fileID: 3202796709169943695}
   m_Layer: 7
   m_Name: Player 1
   m_TagString: Untagged
@@ -137,7 +138,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1035778711
-  m_SortingLayer: 6
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 1995424293, guid: 113d853bee4ec40ddb56645d92131364, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -228,12 +229,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   currentHealth: 0
+  minHealth: 0
   maxStamina: 100
   currentStamina: 0
   minStamina: 0
   staminaDecreaseRate: 1
   maxChakra: 100
   currentChakra: 0
+  damageMessageDuration: 1
+  damageMessageSpeed: 2
   tilemapManager: {fileID: 0}
   villageAffiliation: 
   ninjaRank: 
@@ -289,6 +293,20 @@ MonoBehaviour:
   rightPunchOrigin: {fileID: 4270627579988184956}
   punchRate: 2
   minChargeTime: 0.5
+--- !u!114 &3202796709169943695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4270627579644720530}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5db83bd29d374407a8ff4da5dc5fabb3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inventoryUI: {fileID: 0}
+  inventorySize: 100
 --- !u!1 &4270627579988184955
 GameObject:
   m_ObjectHideFlags: 0
