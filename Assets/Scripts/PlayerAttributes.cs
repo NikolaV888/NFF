@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-
 public class PlayerAttributes : MonoBehaviour
 {
     public float maxHealth = 100f;
@@ -15,11 +14,12 @@ public class PlayerAttributes : MonoBehaviour
     public float maxChakra = 100f;
     public float currentChakra;
 
-    //new
-  //  public SortingLayer waterSortingLayer;
-  //  public LayerMask groundLayers;
-    public TilemapManager tilemapManager;
+    public bool isChargingChakra { get; private set; }
+    private bool wasChargingChakra = false;
+    private Vector2 chargingDirection;
 
+    public TilemapManager tilemapManager;
+    private Animator animator;
 
     public void DecreaseStamina(float amount)
     {
@@ -53,11 +53,14 @@ public class PlayerAttributes : MonoBehaviour
         deaths = 0;
         killDeathRatio = 0;
         yen = 0;
+
+        animator = GetComponent<Animator>();
     }
 
     void Update()
     {
         Movement movement = GetComponent<Movement>();
+
         if (movement.isRunning && movement.movementDirection.magnitude > 0)
         {
             currentStamina -= staminaDecreaseRate * Time.deltaTime;
@@ -73,9 +76,39 @@ public class PlayerAttributes : MonoBehaviour
         if (Input.GetKey(KeyCode.Z))
         {
             float chakraRegenRate = 2f;
+            isChargingChakra = true;
             currentChakra += chakraRegenRate * Time.deltaTime;
             currentChakra = Mathf.Clamp(currentChakra, 0, maxChakra);
+            animator.SetBool("IsChargingChakra", true);
+
+            if (!wasChargingChakra)
+            {
+                chargingDirection = movement.direction;
+                wasChargingChakra = true;
+            }
         }
+        else
+        {
+            isChargingChakra = false;
+            wasChargingChakra = false;
+            animator.SetBool("IsChargingChakra", false);
+        }
+        /*
+        if (!isChargingChakra)
+        {
+            animator.SetFloat("Horizontal", movement.direction.x);
+            animator.SetFloat("Vertical", movement.direction.y);
+        }
+        */
+
+        if (!tilemapManager.IsPositionOnGrass(transform.position) && tilemapManager.IsPositionOnWater(transform.position) && movement.movementDirection.magnitude > 0)
+        {
+            float chakraDecreaseRate = 2f;
+            currentChakra -= chakraDecreaseRate * Time.deltaTime;
+            currentChakra = Mathf.Clamp(currentChakra, 0, maxChakra);
+        }
+
+
 
         bool IsPositionOnWater = tilemapManager.IsPositionOnWater(transform.position);
         if (!tilemapManager.IsPositionOnGrass(transform.position) && tilemapManager.IsPositionOnWater(transform.position) && movement.movementDirection.magnitude > 0)
@@ -85,7 +118,7 @@ public class PlayerAttributes : MonoBehaviour
             currentChakra = Mathf.Clamp(currentChakra, 0, maxChakra);
 
             // Add debug message for chakra decrease
-            Debug.Log("Decreasing chakra: " + currentChakra);
+            //Debug.Log("Decreasing chakra: " + currentChakra);
         }
     }
 

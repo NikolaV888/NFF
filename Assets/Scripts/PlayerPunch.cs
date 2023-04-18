@@ -15,7 +15,7 @@ public class PlayerPunch : MonoBehaviour
     public float punchRate = 1f;
     float nextPunchTime = 0f;
     // Charge punch
-    private float chargeTime = -1f;
+    private float chargeTime = 0f;
     public float minChargeTime = 2f;
 
     // Reference to Movement
@@ -122,8 +122,9 @@ public class PlayerPunch : MonoBehaviour
         animator.SetTrigger("RightPunch");
         playerAttributes.DecreaseStamina(staminaDecreaseRate);
 
-        // Update punch origin based on the player's direction
+        // Update punch origin based
         UpdatePunchOrigin(rightPunchOrigin);
+
 
         // Detect enemies in the box for the right punch
         Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(rightPunchOrigin.position, rightPunchOrigin.localScale, 0, enemiesLayers);

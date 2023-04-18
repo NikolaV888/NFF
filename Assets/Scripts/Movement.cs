@@ -21,6 +21,8 @@ public class Movement : MonoBehaviour
     public bool isRunning = false;
     public Vector2 direction { get; private set; }
 
+
+
     //public bool canRotate = true;
     //   public bool canRotate = true;
 
@@ -37,7 +39,7 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
-        if (canMove)
+        if (canMove && !GetComponent<PlayerAttributes>().isChargingChakra)
         {
             float horizontalInput = Input.GetAxisRaw("Horizontal");
             float verticalInput = Input.GetAxisRaw("Vertical");
@@ -53,20 +55,10 @@ public class Movement : MonoBehaviour
                 animator.SetFloat("Horizontal", movementDirection.x);
                 animator.SetFloat("Vertical", movementDirection.y);
                 animator.SetFloat("Speed", movementDirection.magnitude * (isRunning ? runSpeed : walkSpeed));
-
-                if (isRunning)
-                {
-                    animator.Play("Run");
-                }
-                else
-                {
-                    animator.Play("Movement");
-                }
             }
             else
             {
                 animator.SetFloat("Speed", 0f);
-                animator.Play("Idle");
             }
 
             if (horizontalInput == 0 && verticalInput == 0)
@@ -97,26 +89,33 @@ public class Movement : MonoBehaviour
                     }
                 }
             }
-        } // <- Add this closing bracket
+        }
     }
+
+
 
 
 
     void FixedUpdate()
     {
-        RaycastHit2D hit = Physics2D.CircleCast(transform.position, 0.2f, movementDirection, 0.1f, treesLayer);
+        // Check if the player is not charging chakra
+        if (!GetComponent<PlayerAttributes>().isChargingChakra)
+        {
+            RaycastHit2D hit = Physics2D.CircleCast(transform.position, 0.2f, movementDirection, 0.1f, treesLayer);
 
-        if (hit)
-        {
-            Vector2 collisionNormal = hit.normal;
-            Vector2 movementDirectionAlongTree = movementDirection - collisionNormal * Vector2.Dot(movementDirection, collisionNormal);
-            rb.MovePosition(rb.position + movementDirectionAlongTree * (isRunning ? runSpeed : walkSpeed) * Time.fixedDeltaTime);
-        }
-        else
-        {
-            rb.MovePosition(rb.position + movementDirection * (isRunning ? runSpeed : walkSpeed) * Time.fixedDeltaTime);
+            if (hit)
+            {
+                Vector2 collisionNormal = hit.normal;
+                Vector2 movementDirectionAlongTree = movementDirection - collisionNormal * Vector2.Dot(movementDirection, collisionNormal);
+                rb.MovePosition(rb.position + movementDirectionAlongTree * (isRunning ? runSpeed : walkSpeed) * Time.fixedDeltaTime);
+            }
+            else
+            {
+                rb.MovePosition(rb.position + movementDirection * (isRunning ? runSpeed : walkSpeed) * Time.fixedDeltaTime);
+            }
         }
     }
+
 
     void OnGUI()
     {
