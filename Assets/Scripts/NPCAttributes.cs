@@ -122,6 +122,7 @@ public class NPCAttributes : MonoBehaviour
                 damageMessages.RemoveAt(i);
             }
         }
+
         currentStamina = Mathf.Clamp(currentStamina, minStamina, maxStamina);
 
         if (currentStamina < maxStamina)

@@ -111,7 +111,7 @@ public class PlayerPunch : MonoBehaviour
 
         if (isChargedPunch)
         {
-            punchDamage = Random.Range(10, 13);
+            punchDamage = Random.Range(12, 15);
         }
         else
         {

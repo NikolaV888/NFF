@@ -5,14 +5,14 @@ using UnityEngine;
 public class NPCControl : MonoBehaviour
 {
     private Animator npcAnim;
-    private Vector3 lastDirection;//new
+    private Vector3 lastDirection;
     private Transform target;
     [SerializeField]
     private float speed;
     [SerializeField]
     private float maxRange;
     [SerializeField]
-    private float minRange;
+    public float minRange;
     [SerializeField]
     private float avoidDistance = 1f;
     [SerializeField]
@@ -22,17 +22,20 @@ public class NPCControl : MonoBehaviour
     [SerializeField]
     private float walkSpeed;
 
+    public bool isFollowingPlayer()
+    {
+        return npcAnim.GetBool("withinRange");
+    }
+
     private NPCAttributes npcAttributes;
 
-    // Start is called before the first frame update
     void Start()
     {
         npcAnim = GetComponent<Animator>();
         target = FindObjectOfType<Movement>().transform;
-        npcAttributes = GetComponent<NPCAttributes>(); // Add this line
+        npcAttributes = GetComponent<NPCAttributes>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Vector3.Distance(target.position, transform.position) <= maxRange && Vector3.Distance(target.position, transform.position) > minRange)
@@ -45,7 +48,6 @@ public class NPCControl : MonoBehaviour
             npcAnim.SetFloat("Horizontal", lastDirection.x);
             npcAnim.SetFloat("Vertical", lastDirection.y);
 
-            // Set the IsRunning parameter to false when not following the player
             npcAnim.SetBool("IsRunning", false);
         }
     }
@@ -71,16 +73,17 @@ public class NPCControl : MonoBehaviour
         npcAnim.SetFloat("Horizontal", avoidObstacleDirection.x);
         npcAnim.SetFloat("Vertical", avoidObstacleDirection.y);
 
-        // Set the IsRunning parameter in the Animator based on the isRunning variable
         npcAnim.SetBool("IsRunning", isRunning);
 
-        lastDirection = avoidObstacleDirection; // Add this line
+        lastDirection = avoidObstacleDirection;
 
-        // Move the NPC using its Transform
         transform.position += avoidObstacleDirection * speed * Time.deltaTime;
     }
 
-
+    public Vector3 GetDirection()
+    {
+        return lastDirection;
+    }
 
 
     private Vector3 AvoidObstacle(Vector3 direction)
@@ -90,7 +93,7 @@ public class NPCControl : MonoBehaviour
         if (hit.collider != null)
         {
             Vector3 avoidDirection = (hit.point - (Vector2)transform.position).normalized;
-            avoidDirection = Quaternion.Euler(0, 0, 90) * avoidDirection; // Turn 90 degrees to avoid the obstacle
+            avoidDirection = Quaternion.Euler(0, 0, 90) * avoidDirection;
             return avoidDirection;
         }
 

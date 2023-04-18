@@ -15,9 +15,17 @@ public class PlayerAttributes : MonoBehaviour
     public float maxChakra = 100f;
     public float currentChakra;
 
+    //chakra Variables
     public bool isChargingChakra { get; private set; }
     private bool wasChargingChakra = false;
     private Vector2 chargingDirection;
+
+
+    // Damage message variables
+    public float damageMessageDuration = 1f;
+    public float damageMessageSpeed = 2f;
+    private List<DamageMessage> damageMessages = new List<DamageMessage>();
+
 
     public TilemapManager tilemapManager;
     private Animator animator;
@@ -61,6 +69,17 @@ public class PlayerAttributes : MonoBehaviour
     void Update()
     {
         Movement movement = GetComponent<Movement>();
+
+        for (int i = damageMessages.Count - 1; i >= 0; i--)
+        {
+            DamageMessage message = damageMessages[i];
+            message.UpdateMessage(Time.deltaTime, damageMessageSpeed);
+
+            if (message.IsFinished())
+            {
+                damageMessages.RemoveAt(i);
+            }
+        }
 
         if (movement.isRunning && movement.movementDirection.magnitude > 0)
         {
@@ -150,6 +169,41 @@ public class PlayerAttributes : MonoBehaviour
         return tilemapManager.IsPositionOnWater(transform.position);
     }
 
+    public void TakeDamage(float damage)
+    {
+        // Apply damage to stamina first
+        currentStamina -= damage;
+
+        // Convert damage to a whole number
+        int damageInt = Mathf.RoundToInt(damage);
+
+        // Create a new DamageMessage instance and add it to the list
+        damageMessages.Add(new DamageMessage($"-{damageInt}", damageMessageDuration));
+
+        if (currentStamina < 0)
+        {
+            // Apply remaining damage to health
+            currentHealth += currentStamina;
+            currentStamina = 0;
+        }
+
+        // Clamp health and stamina values within their respective min and max values
+        currentHealth = Mathf.Clamp(currentHealth, minHealth, maxHealth);
+        currentStamina = Mathf.Clamp(currentStamina, minStamina, maxStamina);
+
+        // Check for player death
+        if (currentHealth <= minHealth && currentStamina <= minStamina)
+        {
+            Die();
+        }
+    }
+
+
+    private void Die()
+    {
+        // Handle player death here (e.g., trigger an animation, restart the level, etc.)
+        Debug.Log("Player has died");
+    }
 
 
     void OnGUI()
@@ -183,5 +237,43 @@ public class PlayerAttributes : MonoBehaviour
         GUI.Label(labelRect, $"K/D Ratio: {killDeathRatio}", guiStyle);
         labelRect.y += labelHeight;
         GUI.Label(labelRect, $"Yen: {yen}", guiStyle);
+
+        //MENSAJE DE DMG
+        float yOffset = 100f; // Adjust this value to position the message above the enemy's head
+        GUIStyle style = new GUIStyle();
+        style.fontSize = 32;
+        style.normal.textColor = Color.red;
+
+        foreach (DamageMessage message in damageMessages)
+        {
+            Vector3 screenPosition = Camera.main.WorldToScreenPoint(transform.position + message.offset);
+            screenPosition.y += yOffset;
+            GUI.Label(new Rect(screenPosition.x, Screen.height - screenPosition.y, 100, 20), message.text, style);
+        }
+    }
+
+    public class DamageMessage
+    {
+        public string text;
+        public float timer;
+        public Vector3 offset;
+
+        public DamageMessage(string text, float duration)
+        {
+            this.text = text;
+            this.timer = duration;
+            this.offset = Vector3.zero;
+        }
+
+        public void UpdateMessage(float deltaTime, float speed)
+        {
+            timer -= deltaTime;
+            offset.y += speed * deltaTime;
+        }
+
+        public bool IsFinished()
+        {
+            return timer <= 0;
+        }
     }
 }
